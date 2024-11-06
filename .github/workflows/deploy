@@ -3,7 +3,7 @@ name: GitHub Pages Deployment
 on:
   push:
     branches:
-      - master  # Using 'master' as the default branch
+      - master  # Deploys when changes are pushed to master
 
 permissions:
   contents: read
@@ -15,12 +15,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Updated to v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3  # Updated to v3
         with:
-          node-version: '16'  # Use the same Node.js version as your local environment, if possible
+          node-version: '20'  # Updated to Node 20 for future compatibility
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v3  # Updated to v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm install
@@ -36,5 +44,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist  # Change this to './out' or your actual build output directory if different
+          publish_dir: ./dist  # Change if your build directory is different
+
 
